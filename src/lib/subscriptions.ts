@@ -96,6 +96,11 @@ import Stripe from "stripe";
 import { STRIPE_PRICE_IDS } from "@/config/plans";
 import { SubscriptionStatus } from "@prisma/client";
 
+type SubWithPeriod = Stripe.Subscription & {
+  current_period_end?: number;
+  current_period_start?: number;
+};
+
 function getPlanDetails(subscription: Stripe.Subscription) {
   const priceId = subscription.items.data[0].price.id;
   let status = "FREE";
@@ -120,42 +125,30 @@ function getPlanDetails(subscription: Stripe.Subscription) {
 
 async function resolvePeriodEnd(sub: Stripe.Subscription): Promise<Date> {
   try {
-    const full = await stripe.subscriptions.retrieve(sub.id);
-    console.log("Retrieved subscription:", {
-      id: full.id,
-      current_period_end: (full as any).current_period_end,
-      current_period_start: (full as any).current_period_start,
-    });
+    const resp = await stripe.subscriptions.retrieve(sub.id);
+    const full = resp as unknown as SubWithPeriod;
 
-    const endUnix = (full as any).current_period_end as number | undefined;
-
+    const endUnix =
+      typeof full.current_period_end === "number"
+        ? full.current_period_end
+        : undefined;
     if (typeof endUnix === "number" && !isNaN(endUnix)) {
-      const result = new Date(endUnix * 1000);
-      console.log("Period end resolved:", result);
-      return result;
+      return new Date(endUnix * 1000);
     }
 
-    // フォールバック: start + 1ヶ月
-    const startUnix = (full as any).current_period_start as number | undefined;
+    const startUnix =
+      typeof full.current_period_start === "number"
+        ? full.current_period_start
+        : undefined;
     if (typeof startUnix === "number" && !isNaN(startUnix)) {
       const d = new Date(startUnix * 1000);
       d.setMonth(d.getMonth() + 1);
-      console.log("Period end from start + 1 month:", d);
       return d;
     }
+  } catch (error) {}
 
-    // ここで throw せず、直接フォールバックに進む
-    console.warn(
-      "Both period_end and period_start are unavailable, using fallback"
-    );
-  } catch (error) {
-    console.error("Stripe API error:", error);
-  }
-
-  // 最終フォールバック: 今から1ヶ月後（常にここに到達）
   const fallback = new Date();
   fallback.setMonth(fallback.getMonth() + 1);
-  console.log("Using final fallback period end:", fallback);
   return fallback;
 }
 
@@ -169,13 +162,11 @@ export async function handleSubscriptionCreated(
   });
 
   if (!user) {
-    console.warn("User not found for customer:", subscription.customer);
     return;
   }
 
   const periodEnd = await resolvePeriodEnd(subscription);
 
-  // 子テーブルを安全にupsert
   await prisma.subscription.upsert({
     where: { userId: user.id },
     create: {
@@ -191,7 +182,6 @@ export async function handleSubscriptionCreated(
     },
   });
 
-  // 親テーブルを更新
   await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -211,7 +201,6 @@ export async function handleSubscriptionUpdated(
   });
 
   if (!user) {
-    console.warn("User not found for customer:", subscription.customer);
     return;
   }
 
