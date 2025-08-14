@@ -21,7 +21,6 @@ const nextConfig: NextConfig = {
   compress: true,
   generateEtags: true,
   reactStrictMode: true,
-  swcMinify: true,
 };
 
 export default nextConfig;
