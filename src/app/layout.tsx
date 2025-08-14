@@ -14,16 +14,30 @@ export const metadata: Metadata = {
   description: "AI SaaS Application Project",
 };
 
+function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="ja">
+      <body className={notoSansJP.className}>{children}</body>
+    </html>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const hasClerk =
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+    process.env.CLERK_SECRET_KEY;
+
+  if (!hasClerk) {
+    return <AppShell>{children}</AppShell>;
+  }
+
   return (
     <ClerkProvider afterSignOutUrl={"/dashboard"}>
-      <html lang="ja">
-        <body className={notoSansJP.className}>{children}</body>
-      </html>
+      <AppShell>{children}</AppShell>
     </ClerkProvider>
   );
 }
