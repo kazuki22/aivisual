@@ -8,7 +8,7 @@ async function CreditContent() {
   const credits = await getUserCredits();
   if (!user) {
     return (
-      <div className="rounded-lg border p-4 bg-background">
+      <div className="rounded-lg p-4 bg-gray-100/80 dark:bg-gray-800/50">
         <div className="text-sm font-medium text-muted-foreground">
           残りクレジット
         </div>
@@ -21,7 +21,7 @@ async function CreditContent() {
   }
 
   return (
-    <div className="rounded-lg border p-4 bg-background">
+    <div className="rounded-lg p-4 bg-gray-100/80 dark:bg-gray-800/50">
       <div className="text-sm font-medium text-muted-foreground">
         残りクレジット
       </div>
@@ -34,7 +34,7 @@ const CreditDisplay = async () => {
   return (
     <Suspense
       fallback={
-        <div className="rounded-lg border p-4 bg-background">
+        <div className="rounded-lg p-4 bg-gray-100/80 dark:bg-gray-800/50">
           <div className="text-sm font-medium text-muted-foreground">
             残りクレジット
           </div>

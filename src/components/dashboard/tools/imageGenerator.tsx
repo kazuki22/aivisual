@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { generateImage } from "@/actions/actions";
 import { GenerateImageState } from "@/types/actions";
-import { Download, ImageIcon } from "lucide-react";
+import { Download, ImageIcon, Sparkles, Wand2 } from "lucide-react";
 import LoadingSpinner from "@/components/dashboard/loading-spinner";
 import { toast } from "@/hooks/use-toast";
 import { useUser, SignInButton } from "@clerk/nextjs";
@@ -51,67 +51,100 @@ const ImageGenerator = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <form action={formAction} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="keyword">キーワード</Label>
-            <Input
-              id="keyword"
-              name="keyword"
-              placeholder="作成したい画像のキーワードを入力（例：海、山など）"
-              required
-            />
-          </div>
+    <div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="w-full">
 
-          {isSignedIn ? (
-            <Button
-              type="submit"
-              disabled={pending}
-              className={cn("w-full duration-200", pending && "bg-primary/80")}
-            >
-              {pending ? (
-                <LoadingSpinner />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* 入力フォーム */}
+            <div className="space-y-6">
+              <div className="rounded-2xl p-6 py-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-0 shadow-lg">
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <Label htmlFor="keyword" className="text-lg font-semibold">
+                      キーワード
+                    </Label>
+                    <Input
+                      id="keyword"
+                      name="keyword"
+                      placeholder="作成したい画像のキーワードを入力（例：海、山など）"
+                      required
+                      className="h-12 text-base border-0 bg-gray-100/80 dark:bg-gray-800/50 focus:bg-white dark:focus:bg-gray-800 transition-colors"
+                    />
+                  </div>
+
+                  {isSignedIn ? (
+                    <Button
+                      type="submit"
+                      disabled={pending}
+                      className={cn(
+                        "w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg",
+                        pending && "opacity-80"
+                      )}
+                    >
+                      {pending ? (
+                        <LoadingSpinner />
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-5 w-5" />
+                          画像を生成する
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <SignInButton mode="modal">
+                      <Button className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                        <ImageIcon className="mr-2 h-5 w-5" />
+                        ログインが必要です
+                      </Button>
+                    </SignInButton>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 画像プレビュー */}
+            <div className="space-y-6">
+              {state.imageUrl ? (
+                <div className="space-y-4">
+                  <div className="rounded-2xl overflow-hidden bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-0 shadow-lg">
+                    <div className="aspect-video">
+                      <img
+                        src={state.imageUrl}
+                        alt="Generated Image"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg"
+                    onClick={handleDownload}
+                  >
+                    <Download className="mr-2 h-5 w-5" />
+                    画像をダウンロード
+                  </Button>
+                </div>
               ) : (
-                <>
-                  <ImageIcon className="mr-2" />
-                  画像を生成する
-                </>
+                <div className="rounded-2xl p-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-0 shadow-lg">
+                  <div className="text-center space-y-4">
+                    <div className="w-24 h-24 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-2xl flex items-center justify-center mx-auto">
+                      <ImageIcon className="h-12 w-12 text-gray-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-muted-foreground">
+                        生成された画像がここに表示されます
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        キーワードを入力して画像を生成してください
+                      </p>
+                    </div>
+                  </div>
+                </div>
               )}
-            </Button>
-          ) : (
-            <SignInButton mode="modal">
-              <Button className="w-full">
-                <ImageIcon className="mr-2" />
-                ログインが必要です。
-              </Button>
-            </SignInButton>
-          )}
-        </form>
-      </div>
-
-      {/* 画像プレビュー */}
-      {state.imageUrl && (
-        <div className="space-y-4">
-          <div className="overflow-hidden rounded-lg border bg-background">
-            <div className="aspect-video">
-              <img
-                src={state.imageUrl}
-                alt="Generated Image"
-                className="w-full h-full object-cover"
-              />
             </div>
           </div>
-          <Button
-            className="w-full"
-            variant={"secondary"}
-            onClick={handleDownload}
-          >
-            <Download className="mr-2" />
-            画像をダウンロード
-          </Button>
         </div>
-      )}
+      </div>
     </div>
   );
 };

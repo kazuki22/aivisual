@@ -47,10 +47,10 @@ const DashboardPage = () => {
       trend: "+12%",
     },
     {
-      title: "今月の使用量",
-      value: "67%",
+      title: "画像最適化数",
+      value: "15",
       total: "",
-      icon: TrendingUp,
+      icon: Zap,
       color: "from-orange-500 to-orange-600",
       trend: "+5%",
     },
@@ -173,7 +173,7 @@ const DashboardPage = () => {
                 {quickActions.map((action, index) => (
                   <div
                     key={index}
-                    className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300 cursor-pointer group"
+                    className="p-4 rounded-lg bg-gray-100/80 dark:bg-gray-800/50 hover:bg-gray-200 dark:hover:bg-gray-700/60 transition-all duration-300 cursor-pointer group"
                   >
                     <div className="flex items-center space-x-3">
                       <div
@@ -217,7 +217,7 @@ const DashboardPage = () => {
                   {recentImages.map((image, index) => (
                     <div
                       key={image.id}
-                      className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                      className="flex items-center justify-between p-4 rounded-lg bg-gray-100/80 dark:bg-gray-800/50 hover:bg-gray-200 dark:hover:bg-gray-700/60 transition-colors"
                     >
                       <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 bg-gradient-to-r from-gray-300 to-gray-400 rounded-lg flex items-center justify-center">
