@@ -90,8 +90,8 @@ export async function generateImage(
       return state;
     }
 
-    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-    const response = await fetch(`${baseUrl}/api/generate-image`, {
+    // 相対パスを使用してAPIを呼び出し
+    const response = await fetch(`/api/generate-image`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -193,8 +193,8 @@ export async function removeBackground(
 
   try {
     console.log("Making API request to remove background");
-    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-    const response = await fetch(`${baseUrl}/api/remove-background`, {
+    // 相対パスを使用してAPIを呼び出し
+    const response = await fetch(`/api/remove-background`, {
       method: "POST",
       body: formData,
     });
