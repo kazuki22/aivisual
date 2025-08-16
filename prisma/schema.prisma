@@ -4,33 +4,60 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id                     String  @id  @default(uuid())
-  clerkId                String  @unique
-  email                  String  @unique
-  stripeCustomerId       String? @unique
-  credits                Int     @default(5)
-  subscriptionStatus     SubscriptionStatus @default(FREE)
-  subscriptions          Subscription?
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  id                 String             @id @default(uuid())
+  clerkId            String             @unique
+  email              String             @unique
+  stripeCustomerId   String?            @unique
+  credits            Int                @default(5)
+  subscriptionStatus SubscriptionStatus @default(FREE)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  images             Image[]
+  subscriptions      Subscription?
 }
 
 model Subscription {
   id                     String   @id @default(uuid())
   userId                 String   @unique
-  user                   User     @relation(fields: [userId], references: [id])
-  stripeSubscriptionId   String  @unique
+  stripeSubscriptionId   String   @unique
   stripePriceID          String
   stripeCurrentPeriodEnd DateTime
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
+  user                   User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
+}
+
+model Image {
+  id             String      @id @default(uuid())
+  userId         String
+  fileName       String
+  originalUrl    String      @db.LongText
+  processedUrl   String?     @db.LongText
+  imageType      ImageType
+  status         ImageStatus @default(PROCESSING)
+  fileSize       Int
+  width          Int?
+  height         Int?
+  format         String
+  processingTime Int?
+  errorMessage   String?
+  prompt         String?
+  settings       Json?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  user           User        @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([imageType])
+  @@index([status])
+  @@index([createdAt])
 }
 
 enum SubscriptionStatus {
@@ -38,4 +65,16 @@ enum SubscriptionStatus {
   STARTER
   PRO
   ENTERPRISE
+}
+
+enum ImageType {
+  AI_GENERATED
+  BACKGROUND_REMOVAL
+  IMAGE_COMPRESSION
+}
+
+enum ImageStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
 }

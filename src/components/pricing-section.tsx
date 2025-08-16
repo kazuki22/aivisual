@@ -44,7 +44,7 @@ const pricingPlans = [
     description: "個人クリエイターや小規模チームに",
     icon: Zap,
     features: [
-      "月間100クレジット",
+      "月間50クレジット",
       "AI画像生成（全モデル）",
       "背景除去（高精度）",
       "画像圧縮・リサイズ",
@@ -60,12 +60,12 @@ const pricingPlans = [
   },
   {
     name: "プロフェッショナル",
-    price: "4,980",
+    price: "2,980",
     period: "月額",
     description: "本格運用する事業者・代理店に",
     icon: Crown,
     features: [
-      "月間500クレジット",
+      "月間100クレジット",
       "AI画像生成（プレミアムモデル）",
       "全機能無制限利用",
       "API アクセス",
@@ -81,12 +81,12 @@ const pricingPlans = [
   },
   {
     name: "エンタープライズ",
-    price: "カスタム",
-    period: "お見積もり",
+    price: "5,980",
+    period: "月額",
     description: "大企業・大規模運用に最適",
     icon: Building,
     features: [
-      "無制限クレジット",
+      "月間300クレジット",
       "カスタムAIモデル",
       "オンプレミス対応",
       "SLA保証",
@@ -96,7 +96,7 @@ const pricingPlans = [
       "カスタム統合",
     ],
     limitations: [],
-    buttonText: "お問い合わせ",
+    buttonText: "無料体験を始める",
     popular: false,
     color: "from-emerald-500 to-emerald-600",
   },

@@ -8,7 +8,7 @@ export const plans = [
   {
     name: "Starter",
     icon: "sparkles",
-    price: "￥1,000",
+    price: "￥1,980",
     description: "個人利用に最適なプランです。",
     features: [
       "月50クレジット付与",
@@ -20,7 +20,7 @@ export const plans = [
   {
     name: "Pro",
     icon: "rocket",
-    price: "￥2,000",
+    price: "￥2,980",
     description: "チーム向けのプランです。",
     features: [
       "月100クレジット付与",
@@ -33,7 +33,7 @@ export const plans = [
   {
     name: "Enterprise",
     icon: "shield-check",
-    price: "￥3,000",
+    price: "￥5,980",
     description: "エンタープライズ向けのプランです。",
     features: [
       "月300クレジット付与",

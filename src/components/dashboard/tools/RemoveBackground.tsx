@@ -28,8 +28,6 @@ const RemoveBackground = () => {
     initialState
   );
 
-  console.log("RemoveBackground component rendered, state:", state);
-
   const handleDownload = () => {
     if (!state.processedImageUrl) {
       return;
@@ -64,7 +62,7 @@ const RemoveBackground = () => {
         <div className="w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* 入力フォーム */}
-            <div className="space-y-6">
+            <form action={formAction} className="space-y-6">
               <div className="rounded-2xl p-6 py-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-0 shadow-lg">
                 <div className="space-y-6">
                   <div className="space-y-3">
@@ -77,7 +75,7 @@ const RemoveBackground = () => {
                         name="image"
                         type="file"
                         accept="image/*"
-                        className="h-12 py-3 text-base border-0 bg-gray-100/80 dark:bg-gray-800/50 focus:bg-white dark:focus:bg-gray-800 transition-colors file:mr-4 file:py-0 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900/50 dark:file:text-green-400"
+                        className="h-12 py-3 text-base border-0 bg-gray-100/80 dark:bg-gray-800/50 focus:bg-white dark:focus:bg-gray-800 transition-colors file:mr-4 file:py-0 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-green-600 file:text-white hover:file:bg-green-100 dark:file:bg-green-900/50 dark:file:text-green-400"
                         required
                       />
                     </div>
@@ -111,7 +109,7 @@ const RemoveBackground = () => {
                   )}
                 </div>
               </div>
-            </div>
+            </form>
 
             {/* 画像プレビュー */}
             <div className="space-y-6">
@@ -127,7 +125,7 @@ const RemoveBackground = () => {
                     </div>
                   </div>
                   <Button
-                    className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
+                    className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg"
                     onClick={handleDownload}
                   >
                     <Download className="mr-2 h-5 w-5" />

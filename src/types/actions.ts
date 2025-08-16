@@ -23,3 +23,11 @@ export type CreateStripeSessionState = {
     error: string;
     redirectUrl?: string;
 };
+
+export type ImageOptimizeState = {
+    image?: string;
+    description?: string;
+    processedImageUrl?: string;
+    error?: string;
+    status: "idle" | "loading" | "success" | "error";
+};

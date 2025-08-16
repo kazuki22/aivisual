@@ -54,12 +54,11 @@ const ImageGenerator = () => {
     <div>
       <div className="container mx-auto px-4 py-8">
         <div className="w-full">
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* 入力フォーム */}
             <div className="space-y-6">
               <div className="rounded-2xl p-6 py-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-0 shadow-lg">
-                <div className="space-y-6">
+                <form action={formAction} className="space-y-6">
                   <div className="space-y-3">
                     <Label htmlFor="keyword" className="text-lg font-semibold">
                       キーワード
@@ -99,7 +98,7 @@ const ImageGenerator = () => {
                       </Button>
                     </SignInButton>
                   )}
-                </div>
+                </form>
               </div>
             </div>
 
@@ -117,7 +116,7 @@ const ImageGenerator = () => {
                     </div>
                   </div>
                   <Button
-                    className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg"
+                    className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
                     onClick={handleDownload}
                   >
                     <Download className="mr-2 h-5 w-5" />
