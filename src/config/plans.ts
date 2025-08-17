@@ -1,7 +1,7 @@
 export const STRIPE_PRICE_IDS = {
-  STARTER: "price_1Rt6v9DkkecKmrVAPZInF7MK",
-  PRO: "price_1Rt6vjDkkecKmrVAxDiRgQ5t",
-  ENTERPRISE: "price_1Rt6w6DkkecKmrVAdYs7kwKn",
+  STARTER: "price_1Rx1duDvnelBMdJWHH1Qx5Vn",
+  PRO: "price_1Rx1g8DvnelBMdJWRGsXrY63",
+  ENTERPRISE: "price_1Rx1hGDvnelBMdJWTEUMpRcc",
 };
 
 export const plans = [

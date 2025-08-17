@@ -29,6 +29,18 @@ export async function createStripeSession(
 
     let customerId = dbUser?.stripeCustomerId;
 
+    // 既存の顧客IDがある場合、Stripeで有効性を確認
+    if (customerId) {
+      try {
+        await stripe.customers.retrieve(customerId);
+      } catch (error) {
+        console.log(
+          `既存の顧客ID ${customerId} が無効です。新しく作成します。`
+        );
+        customerId = null; // 無効な顧客IDをクリア
+      }
+    }
+
     if (!customerId) {
       const stripeCustomer = await stripe.customers.create({
         email: user.emailAddresses[0].emailAddress,
@@ -45,7 +57,6 @@ export async function createStripeSession(
           stripeCustomerId: customerId,
         },
       });
-      customerId = stripeCustomer.id;
     }
 
     const session = await stripe.checkout.sessions.create({

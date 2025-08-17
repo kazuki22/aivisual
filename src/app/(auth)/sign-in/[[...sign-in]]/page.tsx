@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 
 export default function CustomSignInPage() {
   const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ export default function CustomSignInPage() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const { signIn, isLoaded: signInLoaded } = useSignIn();
+  const { isSignedIn } = useUser();
 
   if (!signInLoaded) {
     return (
@@ -26,6 +28,12 @@ export default function CustomSignInPage() {
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
+  }
+
+  // 既にサインインしている場合はダッシュボードにリダイレクト
+  if (isSignedIn) {
+    window.location.href = "/dashboard";
+    return null;
   }
 
   const validateForm = () => {
@@ -91,9 +99,14 @@ export default function CustomSignInPage() {
         redirectUrl: "/sso-callback",
         redirectUrlComplete: "/dashboard",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Googleサインインエラー:", error);
-      setErrors({ general: "Googleサインインに失敗しました" });
+      if (error.message === "You're already signed in.") {
+        // 既にサインインしている場合はダッシュボードにリダイレクト
+        window.location.href = "/dashboard";
+      } else {
+        setErrors({ general: "Googleサインインに失敗しました" });
+      }
       setIsOAuthLoading(false);
     }
   };
@@ -106,9 +119,14 @@ export default function CustomSignInPage() {
         redirectUrl: "/sso-callback",
         redirectUrlComplete: "/dashboard",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("GitHubサインインエラー:", error);
-      setErrors({ general: "GitHubサインインに失敗しました" });
+      if (error.message === "You're already signed in.") {
+        // 既にサインインしている場合はダッシュボードにリダイレクト
+        window.location.href = "/dashboard";
+      } else {
+        setErrors({ general: "GitHubサインインに失敗しました" });
+      }
       setIsOAuthLoading(false);
     }
   };
