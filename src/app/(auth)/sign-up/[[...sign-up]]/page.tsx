@@ -19,8 +19,8 @@ import Link from "next/link";
 
 export default function CustomSignUpPage() {
   const { isLoaded, signUp, setActive } = useSignUp();
-  const { signIn: googleSignIn, isLoaded: googleLoaded } = useSignIn();
-  const { signIn: githubSignIn, isLoaded: githubLoaded } = useSignIn();
+  const { isLoaded: googleLoaded } = useSignIn();
+  const { isLoaded: githubLoaded } = useSignIn();
 
   // フォーム状態
   const [email, setEmail] = useState("");
@@ -64,11 +64,11 @@ export default function CustomSignUpPage() {
 
   // ソーシャルログイン処理
   const handleGoogleSignUp = async () => {
-    if (!googleLoaded) return;
+    if (!googleLoaded || !isLoaded) return;
 
     setIsOAuthLoading(true);
     try {
-      await googleSignIn.authenticateWithRedirect({
+      await signUp.authenticateWithRedirect({
         strategy: "oauth_google",
         redirectUrl: "/sso-callback",
         redirectUrlComplete: "/dashboard",
@@ -84,11 +84,11 @@ export default function CustomSignUpPage() {
   };
 
   const handleGithubSignUp = async () => {
-    if (!githubLoaded) return;
+    if (!githubLoaded || !isLoaded) return;
 
     setIsOAuthLoading(true);
     try {
-      await githubSignIn.authenticateWithRedirect({
+      await signUp.authenticateWithRedirect({
         strategy: "oauth_github",
         redirectUrl: "/sso-callback",
         redirectUrlComplete: "/dashboard",

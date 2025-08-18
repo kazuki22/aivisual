@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
-import { ImageType, ImageStatus } from "@prisma/client";
+import { ImageType, ImageStatus, Prisma } from "@prisma/client";
 
 // 共通の認証・ユーザー取得（なければ作成）ヘルパー関数
 async function getAuthenticatedUser() {
@@ -16,19 +16,40 @@ async function getAuthenticatedUser() {
     user.emailAddresses?.[0]?.emailAddress ||
     "";
 
-  const dbUser = await prisma.user.upsert({
-    where: { clerkId: user.id },
-    update: { email: primaryEmail },
-    create: {
-      clerkId: user.id,
-      email: primaryEmail,
-      credits: 5,
-      subscriptionStatus: "FREE",
-    },
-    select: { id: true },
-  });
+  try {
+    const dbUser = await prisma.user.upsert({
+      where: { clerkId: user.id },
+      update: { email: primaryEmail },
+      create: {
+        clerkId: user.id,
+        email: primaryEmail,
+        credits: 5,
+        subscriptionStatus: "FREE",
+      },
+      select: { id: true },
+    });
 
-  return { clerkUser: user, dbUser };
+    return { clerkUser: user, dbUser };
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2002"
+    ) {
+      const existingByEmail = await prisma.user.findUnique({
+        where: { email: primaryEmail },
+        select: { id: true },
+      });
+      if (existingByEmail) {
+        const merged = await prisma.user.update({
+          where: { id: existingByEmail.id },
+          data: { clerkId: user.id },
+          select: { id: true },
+        });
+        return { clerkUser: user, dbUser: merged };
+      }
+    }
+    throw e;
+  }
 }
 
 // 画像一覧を取得（フィルタリング対応）

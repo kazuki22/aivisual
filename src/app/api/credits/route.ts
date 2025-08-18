@@ -53,7 +53,12 @@ export async function GET() {
         if (existingByEmail) {
           const updated = await prisma.user.update({
             where: { id: existingByEmail.id },
-            data: { clerkId: user.id },
+            data: {
+              clerkId: user.id,
+              // 既存が0未満の異常な場合や0の場合は最低5へ補正
+              credits: existingByEmail.credits < 5 ? 5 : undefined,
+              subscriptionStatus: existingByEmail.subscriptionStatus || "FREE",
+            },
             select: { credits: true, subscriptionStatus: true },
           });
           return NextResponse.json({
