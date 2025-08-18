@@ -31,7 +31,9 @@ export function useImages(limit: number = 5) {
     const fetchImages = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/images?limit=${limit}`);
+        const response = await fetch(`/api/images?limit=${limit}`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           throw new Error("画像の取得に失敗しました");

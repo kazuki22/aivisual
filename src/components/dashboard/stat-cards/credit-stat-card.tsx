@@ -25,7 +25,9 @@ const CreditStatCard = ({ index }: CreditStatCardProps) => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("/api/credits");
+        const response = await fetch("/api/credits", {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           if (response.status === 401) {

@@ -18,7 +18,8 @@ const BackgroundRemovalStatCard = ({
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "/api/images?type=BACKGROUND_REMOVAL&status=COMPLETED"
+          "/api/images?type=BACKGROUND_REMOVAL&status=COMPLETED",
+          { credentials: "include" }
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

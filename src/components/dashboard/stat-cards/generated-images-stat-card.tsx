@@ -16,7 +16,8 @@ const GeneratedImagesStatCard = ({ index }: GeneratedImagesStatCardProps) => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "/api/images?type=AI_GENERATED&status=COMPLETED"
+          "/api/images?type=AI_GENERATED&status=COMPLETED",
+          { credentials: "include" }
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
