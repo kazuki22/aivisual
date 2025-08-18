@@ -191,8 +191,8 @@ export default function CustomSignUpPage() {
 
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
-        // ダッシュボードにリダイレクト
-        window.location.href = "/sso-callback";
+        // ダッシュボードに直接リダイレクト（sso-callbackを経由しない）
+        window.location.href = "/dashboard";
       }
     } catch (err: any) {
       console.error("確認エラー:", err);

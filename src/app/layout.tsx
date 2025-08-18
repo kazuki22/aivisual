@@ -36,7 +36,13 @@ export default function RootLayout({
   }
 
   return (
-    <ClerkProvider afterSignOutUrl={"/dashboard"}>
+    <ClerkProvider
+      afterSignInUrl="/dashboard"
+      afterSignUpUrl="/dashboard"
+      afterSignOutUrl="/"
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+    >
       <AppShell>{children}</AppShell>
     </ClerkProvider>
   );
