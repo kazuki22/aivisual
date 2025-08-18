@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Scissors, Loader2 } from "lucide-react";
 
@@ -13,6 +14,7 @@ const BackgroundRemovalStatCard = ({
 }: BackgroundRemovalStatCardProps) => {
   const [backgroundRemovals, setBackgroundRemovals] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const { isLoaded: userLoaded, isSignedIn } = useUser();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,8 +43,10 @@ const BackgroundRemovalStatCard = ({
       }
     };
 
-    fetchData();
-  }, []);
+    if (userLoaded && isSignedIn) {
+      fetchData();
+    }
+  }, [userLoaded, isSignedIn]);
 
   if (loading) {
     return (

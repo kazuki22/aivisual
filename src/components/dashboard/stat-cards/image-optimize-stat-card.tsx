@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Card, CardContent } from "@/components/ui/card";
 import { ImageDown, Loader2 } from "lucide-react";
 
@@ -11,6 +12,7 @@ interface ImageOptimizeStatCardProps {
 const ImageOptimizeStatCard = ({ index }: ImageOptimizeStatCardProps) => {
   const [imageCleanups, setImageCleanups] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const { isLoaded: userLoaded, isSignedIn } = useUser();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,8 +41,10 @@ const ImageOptimizeStatCard = ({ index }: ImageOptimizeStatCardProps) => {
       }
     };
 
-    fetchData();
-  }, []);
+    if (userLoaded && isSignedIn) {
+      fetchData();
+    }
+  }, [userLoaded, isSignedIn]);
 
   if (loading) {
     return (

@@ -19,7 +19,12 @@ async function getAuthenticatedUser() {
   const dbUser = await prisma.user.upsert({
     where: { clerkId: user.id },
     update: { email: primaryEmail },
-    create: { clerkId: user.id, email: primaryEmail },
+    create: {
+      clerkId: user.id,
+      email: primaryEmail,
+      credits: 5,
+      subscriptionStatus: "FREE",
+    },
     select: { id: true },
   });
 

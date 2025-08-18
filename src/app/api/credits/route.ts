@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export async function GET() {
   try {
@@ -18,21 +19,51 @@ export async function GET() {
       user.emailAddresses?.[0]?.emailAddress ||
       "";
 
-    const dbUser = await prisma.user.upsert({
-      where: { clerkId: user.id },
-      update: { email: primaryEmail },
-      create: { clerkId: user.id, email: primaryEmail },
-      select: {
-        credits: true,
-        subscriptionStatus: true,
-      },
-    });
+    try {
+      const dbUser = await prisma.user.upsert({
+        where: { clerkId: user.id },
+        update: { email: primaryEmail },
+        create: {
+          clerkId: user.id,
+          email: primaryEmail,
+          credits: 5,
+          subscriptionStatus: "FREE",
+        },
+        select: {
+          credits: true,
+          subscriptionStatus: true,
+        },
+      });
 
-    // クレジット数を返す
-    return NextResponse.json({
-      credits: dbUser.credits,
-      subscriptionStatus: dbUser.subscriptionStatus,
-    });
+      // クレジット数を返す
+      return NextResponse.json({
+        credits: dbUser.credits,
+        subscriptionStatus: dbUser.subscriptionStatus,
+      });
+    } catch (e) {
+      // メールのユニーク制約衝突などに対処
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2002"
+      ) {
+        const existingByEmail = await prisma.user.findUnique({
+          where: { email: primaryEmail },
+          select: { id: true, credits: true, subscriptionStatus: true },
+        });
+        if (existingByEmail) {
+          const updated = await prisma.user.update({
+            where: { id: existingByEmail.id },
+            data: { clerkId: user.id },
+            select: { credits: true, subscriptionStatus: true },
+          });
+          return NextResponse.json({
+            credits: updated.credits,
+            subscriptionStatus: updated.subscriptionStatus,
+          });
+        }
+      }
+      throw e;
+    }
   } catch (error) {
     console.error("クレジット取得エラー:", error);
     return NextResponse.json(

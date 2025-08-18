@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useClerk } from "@clerk/nextjs";
 
 export default function CustomSignInPage() {
   const [email, setEmail] = useState("");
@@ -21,6 +21,7 @@ export default function CustomSignInPage() {
 
   const { signIn, isLoaded: signInLoaded } = useSignIn();
   const { isSignedIn } = useUser();
+  const { setActive } = useClerk();
 
   if (!signInLoaded) {
     return (
@@ -64,14 +65,18 @@ export default function CustomSignInPage() {
     setErrors({});
 
     try {
-      const result = await signIn.create({
+      const result: any = await signIn.create({
         identifier: email,
         password: password,
         redirectUrl: "/sso-callback",
       });
 
       if (result.status === "complete") {
-        // サインイン完了、リダイレクトされる
+        // セッションを即時有効化してダッシュボードへ
+        if (result.createdSessionId) {
+          await setActive({ session: result.createdSessionId });
+        }
+        window.location.href = "/dashboard";
       } else {
         setErrors({ general: "サインインに失敗しました" });
       }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Card, CardContent } from "@/components/ui/card";
 import { CreditCard, Loader2, AlertCircle } from "lucide-react";
 
@@ -18,6 +19,7 @@ const CreditStatCard = ({ index }: CreditStatCardProps) => {
   const [subscriptionStatus, setSubscriptionStatus] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isLoaded: userLoaded, isSignedIn } = useUser();
 
   useEffect(() => {
     const fetchCredits = async () => {
@@ -55,8 +57,10 @@ const CreditStatCard = ({ index }: CreditStatCardProps) => {
       }
     };
 
-    fetchCredits();
-  }, []);
+    if (userLoaded && isSignedIn) {
+      fetchCredits();
+    }
+  }, [userLoaded, isSignedIn]);
 
   // プラン別のクレジット制限を設定
   const getPlanCredits = () => {

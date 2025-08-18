@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 
 export interface ImageData {
   id: string;
@@ -26,6 +27,7 @@ export function useImages(limit: number = 5) {
   const [images, setImages] = useState<ImageData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isLoaded: userLoaded, isSignedIn } = useUser();
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -50,8 +52,10 @@ export function useImages(limit: number = 5) {
       }
     };
 
-    fetchImages();
-  }, [limit]);
+    if (userLoaded && isSignedIn) {
+      fetchImages();
+    }
+  }, [limit, userLoaded, isSignedIn]);
 
   return { images, loading, error };
 }
