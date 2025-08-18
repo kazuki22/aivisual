@@ -7,15 +7,24 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ImageStatus } from "@prisma/client";
+import { headers } from "next/headers";
 
 function getBaseUrl() {
+  try {
+    const h = headers();
+    const hdrs = h as unknown as Headers;
+    const host = hdrs.get("x-forwarded-host") || hdrs.get("host");
+    const proto = hdrs.get("x-forwarded-proto") || "https";
+    if (host) return `${proto}://${host}`;
+  } catch (_) {
+    // no-op
+  }
   if (process.env.BASE_URL) return process.env.BASE_URL;
   const vercelUrl =
     process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL;
   if (vercelUrl) {
-    const hasProtocol =
-      vercelUrl.startsWith("http://") || vercelUrl.startsWith("https://");
-    return hasProtocol ? vercelUrl : `https://${vercelUrl}`;
+    const sanitized = vercelUrl.replace(/^https?:\/\//, "");
+    return `https://${sanitized}`;
   }
   return "http://localhost:3000";
 }
