@@ -10,26 +10,18 @@ async function getAuthenticatedUser() {
     throw new Error("認証が必要です");
   }
 
-  let dbUser = await prisma.user.findUnique({
+  const primaryEmail =
+    user.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)
+      ?.emailAddress ||
+    user.emailAddresses?.[0]?.emailAddress ||
+    "";
+
+  const dbUser = await prisma.user.upsert({
     where: { clerkId: user.id },
+    update: { email: primaryEmail },
+    create: { clerkId: user.id, email: primaryEmail },
+    select: { id: true },
   });
-
-  // DBにユーザーが存在しない場合は作成（Webhookの到達前レース対策）
-  if (!dbUser) {
-    const primaryEmail =
-      user.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)
-        ?.emailAddress ||
-      user.emailAddresses?.[0]?.emailAddress ||
-      "";
-
-    dbUser = await prisma.user.create({
-      data: {
-        clerkId: user.id,
-        email: primaryEmail,
-        // credits / subscriptionStatus は Prisma のデフォルトを使用
-      },
-    });
-  }
 
   return { clerkUser: user, dbUser };
 }

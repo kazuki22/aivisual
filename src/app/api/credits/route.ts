@@ -11,38 +11,22 @@ export async function GET() {
       return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
     }
 
-    // データベースからユーザー情報を取得（存在しない場合は作成）
-    let dbUser = await prisma.user.findUnique({
-      where: {
-        clerkId: user.id,
-      },
+    // DBユーザーを保証（存在しない場合は作成、存在する場合はメールを更新）
+    const primaryEmail =
+      user.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)
+        ?.emailAddress ||
+      user.emailAddresses?.[0]?.emailAddress ||
+      "";
+
+    const dbUser = await prisma.user.upsert({
+      where: { clerkId: user.id },
+      update: { email: primaryEmail },
+      create: { clerkId: user.id, email: primaryEmail },
       select: {
         credits: true,
         subscriptionStatus: true,
       },
     });
-
-    if (!dbUser) {
-      const primaryEmail =
-        user.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)
-          ?.emailAddress ||
-        user.emailAddresses?.[0]?.emailAddress ||
-        "";
-
-      await prisma.user.create({
-        data: {
-          clerkId: user.id,
-          email: primaryEmail,
-          // credits / subscriptionStatus は Prisma のデフォルトを使用
-        },
-      });
-
-      // 作成直後の初期値を返す（以降の処理は不要）
-      return NextResponse.json({
-        credits: 5,
-        subscriptionStatus: "FREE",
-      });
-    }
 
     // クレジット数を返す
     return NextResponse.json({
