@@ -3,19 +3,32 @@ import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { ImageType, ImageStatus } from "@prisma/client";
 
-// 共通の認証・ユーザー取得ヘルパー関数
+// 共通の認証・ユーザー取得（なければ作成）ヘルパー関数
 async function getAuthenticatedUser() {
   const user = await currentUser();
   if (!user) {
     throw new Error("認証が必要です");
   }
 
-  const dbUser = await prisma.user.findUnique({
+  let dbUser = await prisma.user.findUnique({
     where: { clerkId: user.id },
   });
 
+  // DBにユーザーが存在しない場合は作成（Webhookの到達前レース対策）
   if (!dbUser) {
-    throw new Error("ユーザーが見つかりません");
+    const primaryEmail =
+      user.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)
+        ?.emailAddress ||
+      user.emailAddresses?.[0]?.emailAddress ||
+      "";
+
+    dbUser = await prisma.user.create({
+      data: {
+        clerkId: user.id,
+        email: primaryEmail,
+        // credits / subscriptionStatus は Prisma のデフォルトを使用
+      },
+    });
   }
 
   return { clerkUser: user, dbUser };
