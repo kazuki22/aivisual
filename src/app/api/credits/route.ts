@@ -37,11 +37,11 @@ export async function GET() {
         },
       });
 
-      // 作成直後の初期値を返す
-      dbUser = {
+      // 作成直後の初期値を返す（以降の処理は不要）
+      return NextResponse.json({
         credits: 5,
         subscriptionStatus: "FREE",
-      } as any;
+      });
     }
 
     // クレジット数を返す
