@@ -8,6 +8,18 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ImageStatus } from "@prisma/client";
 
+function getBaseUrl() {
+  if (process.env.BASE_URL) return process.env.BASE_URL;
+  const vercelUrl =
+    process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL;
+  if (vercelUrl) {
+    const hasProtocol =
+      vercelUrl.startsWith("http://") || vercelUrl.startsWith("https://");
+    return hasProtocol ? vercelUrl : `https://${vercelUrl}`;
+  }
+  return "http://localhost:3000";
+}
+
 // 画像をデータベースに保存するヘルパー関数（直接Prisma使用）
 async function saveImageToDatabaseDirectly(imageData: {
   fileName: string;
@@ -91,7 +103,7 @@ export async function generateImage(
     }
 
     // サーバーサイドでは絶対URLが必要
-    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+    const baseUrl = getBaseUrl();
     const response = await fetch(`${baseUrl}/api/generate-image`, {
       method: "POST",
       headers: {
@@ -195,7 +207,7 @@ export async function removeBackground(
   try {
     console.log("Making API request to remove background");
     // サーバーサイドでは絶対URLが必要
-    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+    const baseUrl = getBaseUrl();
     const response = await fetch(`${baseUrl}/api/remove-background`, {
       method: "POST",
       body: formData,
